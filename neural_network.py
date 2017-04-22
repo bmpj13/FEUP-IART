@@ -28,7 +28,7 @@ def model(data):
     l1 = tf.nn.sigmoid(l1) # activation function
 
     output = tf.add(tf.matmul(l1, output_layer['weights']), output_layer['biases'])
-    return tf.transpose(output)
+    return output
 
 
 def train(x):
@@ -50,7 +50,7 @@ def train(x):
             print('Epoch', epoch, 'completed out of', epochs, 'loss:', epoch_loss)
             parser.reset_batch_start()
 
-        correct = tf.equal(predicted_class, tf.equal(y,1.0))
+        correct = tf.equal(predicted_class, tf.equal(y, 1.0))
         accuracy = tf.reduce_mean( tf.cast(correct, 'float') )
 
         test_x, test_y = parser.test_set(train_set_size)

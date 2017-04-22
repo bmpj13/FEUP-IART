@@ -216,5 +216,5 @@ def get_sets(rows):
     epoch_y = []
     for row in rows:
         epoch_x.append(row[:-1])
-        epoch_y.append(row[-1])
+        epoch_y.append([row[-1]])
     return epoch_x, epoch_y
