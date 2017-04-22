@@ -65,7 +65,7 @@ def make_field_name(s):
     s = "_".join(re.findall("[a-z0-9]+", s))    # strip all invalid chars; join what's left with "_"
     if iskeyword(s) or re.match("[0-9]", s):    # if the result is a keyword or starts with a digit
         s = "f_"+s                              #   make it a safe field name
-    return s  
+    return s
 
 class ArffReader:
     line_types = ["blank", "comment", "relation", "attribute", "data"]
@@ -121,9 +121,9 @@ class ArffReader:
     def line_is_data(self, line):
         return line.lower().startswith('@data')
 
-    #    
+    #
     # handle input-line type
-    #    
+    #
 
     def line_do_blank(self, line):
         pass
@@ -180,18 +180,17 @@ class ArffReader:
         return self.dtype(*(fn(dat) for fn,dat in zip(self.data_types, data)))
 
 
-# limit for search
-from itertools import islice
-start = 0
-end = 0
-
-
 # http://stackoverflow.com/questions/36106712/how-can-i-limit-iterations-of-a-loop-in-python
 # http://stackoverflow.com/questions/22187589/how-can-i-parse-an-arff-file-without-using-external-libraries-in-python
 '''
 for row in islice(ArffReader('data/dataset.arff'), start, end):
     print(row)
 '''
+
+# limit for search
+from itertools import islice
+start = 0
+end = 0
 
 def next_training_set(batch_size):
     global start
@@ -201,7 +200,7 @@ def next_training_set(batch_size):
     start += batch_size
     return rows
 
-'''
-for row in next_training_set(5):
-    print(row)
-'''
+
+def reset_batch_start():
+    global start
+    start = 0
