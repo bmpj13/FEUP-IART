@@ -198,9 +198,23 @@ def next_training_set(batch_size):
     end = start + batch_size
     rows = islice(ArffReader('data/dataset.arff'), start, end)
     start += batch_size
-    return rows
+    return get_sets(rows)
 
+
+def test_set(train_set_size):
+    test_start = train_set_size + 1
+    rows = islice(ArffReader('data/dataset.arff'), test_start)
+    return get_sets(rows)
 
 def reset_batch_start():
     global start
     start = 0
+
+
+def get_sets(rows):
+    epoch_x = []
+    epoch_y = []
+    for row in rows:
+        epoch_x.append(row[:-1])
+        epoch_y.append(row[-1])
+    return epoch_x, epoch_y
