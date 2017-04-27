@@ -37,30 +37,38 @@ def train(x):
     predicted_class = tf.greater(prediction, 0.5)
     cost = tf.nn.l2_loss(prediction-y)
     optimizer = tf.train.AdamOptimizer().minimize(cost)     # learning_rate = 0.001
+    correct = tf.equal(predicted_class, tf.equal(y, 1.0))
+    accuracy = tf.reduce_mean( tf.cast(correct, 'float') )
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
+        activation_summary = tf.summary.histogram("output", prediction)
+        accuracy_summary = tf.summary.scalar("accuracy", accuracy)
+        cost_summary = tf.summary.scalar("cost", cost)
+        all_summary = tf.summary.merge_all()
+
+        writer = tf.summary.FileWriter("Output", sess.graph)
+
         for epoch in range(epochs):
             epoch_loss = 0
-            for _ in range(train_set_size/batch_size):
+            for i in range(train_set_size/batch_size):
                 epoch_x, epoch_y = parser.next_training_set(batch_size=batch_size)
-                epoch_x = tf.nn.batch_normalization(epoch_x)
-                _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
-                epoch_loss += c
+
+                if i % 10 == 0:
+                    summary_results, _, c = sess.run([all_summary, optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
+                    writer.add_summary(summary_results, i)
+                    epoch_loss += c
+                else:
+                    _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
+                    epoch_loss += c
+
             print('Epoch', epoch, 'completed out of', epochs, 'loss:', epoch_loss)
             parser.reset_batch_start()
 
-        correct = tf.equal(predicted_class, tf.equal(y, 1.0))
-        accuracy = tf.reduce_mean( tf.cast(correct, 'float') )
 
         test_x, test_y = parser.test_set(train_set_size)
         print('Accuracy:', accuracy.eval({x:test_x, y:test_y}) * 100)
-
-        activation_summary = tf.summary.histogram("output", prediction)
-        accuracy_summary = tf.summary.scalar("accuracy", accuracy)
-        cost_summary = tf.summary.scalar("cost", accuracy)
-        all_summary = tf.summary.merge_all()
 
 
 train(x)
