@@ -1,6 +1,7 @@
 from collections import namedtuple
 from keyword import iskeyword
 import re
+import random
 
 def NotDone(msg):
     raise NotImplemented(msg)
@@ -212,9 +213,11 @@ def reset_batch_start():
 
 
 def get_sets(rows):
+    lst = list(rows)
+    random.shuffle(lst)
     epoch_x = []
     epoch_y = []
-    for row in rows:
+    for row in lst:
         epoch_x.append(row[:-1])
         epoch_y.append([row[-1]])
     return epoch_x, epoch_y

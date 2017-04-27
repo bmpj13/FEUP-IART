@@ -45,6 +45,7 @@ def train(x):
             epoch_loss = 0
             for _ in range(train_set_size/batch_size):
                 epoch_x, epoch_y = parser.next_training_set(batch_size=batch_size)
+                epoch_x = tf.nn.batch_normalization(epoch_x)
                 _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
                 epoch_loss += c
             print('Epoch', epoch, 'completed out of', epochs, 'loss:', epoch_loss)
