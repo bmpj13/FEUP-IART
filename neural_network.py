@@ -59,6 +59,8 @@ def train(x):
     optimizer = tf.train.AdamOptimizer().minimize(cost)     # learning_rate = 0.001
     correct = tf.equal(predicted_class, tf.equal(y, 1.0))
     accuracy = tf.reduce_mean( tf.cast(correct, 'float'))
+    weights=tf.Variable(tf.truncated_normal(shape=[n_inputs, n_nodes_hl1], stddev=1.0))
+    bias=tf.Variable(tf.constant(0.1, shape=[n_nodes_hl1]))
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -66,9 +68,11 @@ def train(x):
         activation_summary = tf.summary.histogram("output", prediction)
         accuracy_summary = tf.summary.scalar("accuracy", accuracy)
         cost_summary = tf.summary.scalar("cost", cost)
+        weight_summary=tf.summary.histogram("weights",weights.eval(session=sess))
+        bias_summary=tf.summary.histogram("biases",bias.eval(session=sess))
         all_summary = tf.summary.merge_all()
 
-        writer = tf.summary.FileWriter("Output", sess.graph)
+        writer = tf.summary.FileWriter("output", sess.graph)
 
         for epoch in range(epochs):
             epoch_loss = 0
