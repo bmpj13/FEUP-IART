@@ -2,6 +2,17 @@ from collections import namedtuple
 from keyword import iskeyword
 import re
 import random
+import os.path
+
+file_path = None
+
+def setFilePath(path):
+    if os.path.isfile(path):
+        global file_path
+        file_path=path
+        return True
+    else:
+        return False
 
 def NotDone(msg):
     raise NotImplemented(msg)
@@ -197,14 +208,14 @@ def next_training_set(batch_size):
     global start
     global end
     end = start + batch_size
-    rows = islice(ArffReader('data/dataset.arff'), start, end)
+    rows = islice(ArffReader(file_path), start, end)
     start += batch_size
     return get_sets(rows)
 
 
 def test_set(train_set_size):
     test_start = train_set_size + 1
-    rows = islice(ArffReader('data/dataset.arff'), test_start)
+    rows = islice(ArffReader(file_path), test_start)
     return get_sets(rows)
 
 def reset_batch_start():
