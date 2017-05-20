@@ -10,22 +10,24 @@ n_classes = 1
 train_set_size = None # = 4000
 batch_size = None # = 100    # numero de amostras a ser propagadas em cada epoch
 epochs = None # = 30         # ciclos feedforward + backpropagation
+learning_rate = None
 
 x = tf.placeholder('float', [None, n_inputs])
 y = tf.placeholder('float')
 
 def read_inputs():
-    if len(argv)<4:
-        wrong_input='''Arguments: neural_network.py <file_path> <n_nodes_hl1> <train_set_size> <batch_size> <epochs>'''
+    if len(argv) < 7:
+        wrong_input='''Arguments: neural_network.py <file_path> <n_nodes_hl1> <train_set_size> <batch_size> <epochs> <learning_rate>'''
         print(wrong_input)
         exit()
     else:
         if parser.setFilePath(argv[1]):
-            global n_nodes_hl1,train_set_size,batch_size,epochs
+            global n_nodes_hl1,train_set_size,batch_size,epochs,learning_rate
             n_nodes_hl1=int(argv[2])
             train_set_size=int(argv[3])
             batch_size=int(argv[4])
             epochs=int(argv[5])
+            learning_rate = float(argv[6])
         else:
             invalid_path='''Arguments: invalid <file_path>'''
             print(invalid_path)
@@ -56,7 +58,7 @@ def train(x):
     prediction = tf.nn.sigmoid(output)
     predicted_class = tf.greater(prediction, 0.5)
     cost = tf.nn.l2_loss(prediction-y)
-    optimizer = tf.train.AdamOptimizer().minimize(cost)     # learning_rate = 0.001
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)     # default learning_rate = 0.001
     correct = tf.equal(predicted_class, tf.equal(y, 1.0))
     accuracy = tf.reduce_mean( tf.cast(correct, 'float'))
     weights=tf.Variable(tf.truncated_normal(shape=[n_inputs, n_nodes_hl1], stddev=1.0))
